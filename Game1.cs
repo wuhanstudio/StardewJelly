@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using Comora;
 namespace StardewJelly;
 
 enum Dir
@@ -16,6 +17,8 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    
+    private Camera camera;
     
     Texture2D playerSprite;
     Texture2D walkUp;
@@ -42,6 +45,8 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = 1280;
         _graphics.PreferredBackBufferHeight = 720;
         _graphics.ApplyChanges();
+        
+        this.camera = new Camera(_graphics.GraphicsDevice);
         
         base.Initialize();
     }
@@ -71,6 +76,9 @@ public class Game1 : Game
         // TODO: Add your update logic here
         player.Update(gameTime);
 
+        this.camera.Position = player.Position;
+        this.camera.Update(gameTime);
+        
         base.Update(gameTime);
     }
 
@@ -79,7 +87,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // TODO: Add your drawing code here
-        _spriteBatch.Begin();
+        _spriteBatch.Begin(this.camera);
         _spriteBatch.Draw(background, new Vector2(-500, -500), Color.White);
         _spriteBatch.Draw(playerSprite, player.Position, Color.White);
         _spriteBatch.End();
