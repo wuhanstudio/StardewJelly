@@ -4,6 +4,14 @@ using Microsoft.Xna.Framework.Input;
 
 namespace StardewJelly;
 
+enum Dir
+{
+    Up,
+    Down,
+    Left,
+    Right
+}
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -18,6 +26,8 @@ public class Game1 : Game
     Texture2D background;
     Texture2D ball;
     Texture2D skull;
+    
+    Player player = new Player();
     
     public Game1()
     {
@@ -59,6 +69,7 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
+        player.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -68,7 +79,11 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // TODO: Add your drawing code here
-
+        _spriteBatch.Begin();
+        _spriteBatch.Draw(background, new Vector2(-500, -500), Color.White);
+        _spriteBatch.Draw(playerSprite, player.Position, Color.White);
+        _spriteBatch.End();
+        
         base.Draw(gameTime);
     }
 }
