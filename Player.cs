@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using Microsoft.Xna.Framework;
@@ -30,8 +31,24 @@ class Player
         position.Y = y;
     }
 
+    public Dir getDirection()
+    {
+        return dir;
+    }
+    
+    public bool IsMoving
+    {
+        get => isMoving;
+    }
+
     public void Update(GameTime gameTime)
     {
+        Keys[] movementKeys =
+        [
+            Keys.W, Keys.A, Keys.S, Keys.D,  // WASD
+            Keys.Up, Keys.Left, Keys.Down, Keys.Right  // Arrow keys
+        ];
+        
         KeyboardState keyboardState = Keyboard.GetState();
         // GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
         
@@ -40,26 +57,25 @@ class Player
         if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up))
         {
             dir = Dir.Up;
-            isMoving = true;
         }
         if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down))
         {
             dir = Dir.Down;
-            isMoving = true;
         }
 
         if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left))
         {
             dir = Dir.Left;
-            isMoving = true;
         }
 
         if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.Right))
         {
             dir = Dir.Right;
-            isMoving = true;
         }
 
+        // Player is moving if any movement key is currently pressed
+        isMoving = movementKeys.Any(k => keyboardState.IsKeyDown(k));
+        
         if (isMoving)
         {
             switch (dir)
@@ -81,8 +97,6 @@ class Player
                     break;
             }            
         }
-        
-        isMoving = false;
     }
 }
 
