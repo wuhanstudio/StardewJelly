@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using Comora;
+using MonoGame.Extended;
+using MonoGame.Extended.ViewportAdapters;
+
 namespace StardewJelly;
 
 enum Dir
@@ -18,7 +20,7 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     
-    private Camera camera;
+    private OrthographicCamera _camera;
     
     Texture2D playerSprite;
     Texture2D walkUp;
@@ -46,7 +48,8 @@ public class Game1 : Game
         _graphics.PreferredBackBufferHeight = 720;
         _graphics.ApplyChanges();
         
-        this.camera = new Camera(_graphics.GraphicsDevice);
+        var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1280, 720);
+        this._camera = new OrthographicCamera(viewportAdapter);
         
         base.Initialize();
     }
@@ -74,11 +77,9 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
-        player.Update(gameTime);
-
-        this.camera.Position = player.Position;
-        this.camera.Update(gameTime);
+        this._camera.Position = player.Position - new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
         
+        player.Update(gameTime);
         base.Update(gameTime);
     }
 
@@ -87,7 +88,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // TODO: Add your drawing code here
-        _spriteBatch.Begin(this.camera);
+        _spriteBatch.Begin(transformMatrix: this._camera.GetViewMatrix());
         _spriteBatch.Draw(background, new Vector2(-500, -500), Color.White);
         _spriteBatch.Draw(playerSprite, player.Position, Color.White);
         _spriteBatch.End();
