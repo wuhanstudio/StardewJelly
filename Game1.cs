@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 using MonoGame.Extended.Animations;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.ViewportAdapters;
 
@@ -30,6 +31,9 @@ public class Game1 : Game
     private Texture2D ball;
     private Texture2D skull;
     
+    private CollisionComponent _collisionComponent;
+    private readonly List<IEntity> _entities = new List<IEntity>();
+
     Player player;
     
     public Game1()
@@ -48,6 +52,8 @@ public class Game1 : Game
         
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1280, 720);
         this._camera = new OrthographicCamera(viewportAdapter);
+        
+        _collisionComponent = new CollisionComponent(new RectangleF(0,0, 1280, 720));
         
         base.Initialize();
     }
@@ -68,6 +74,15 @@ public class Game1 : Game
 
         ball = Content.Load<Texture2D>("ball");
         skull = Content.Load<Texture2D>("skull");
+        
+        _entities.Add(player);
+        
+        // Add those objects to the collisionComponent so it will do the collision checking for us
+        foreach (IEntity entity in _entities)
+        {
+            _collisionComponent.Insert(entity);
+        }
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -79,7 +94,15 @@ public class Game1 : Game
         // TODO: Add your update logic here
         _camera.Position = player.Position - new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
         
-        player.Update(gameTime);
+        // Make sure each entity moves around the screen
+        foreach (IEntity entity in _entities)
+        {
+            entity.Update(gameTime);
+        }
+
+        // Make sure all collisions are detected and the OnCollision event for each is called
+        _collisionComponent.Update(gameTime);
+        
         base.Update(gameTime);
     }
 
@@ -90,7 +113,10 @@ public class Game1 : Game
         // TODO: Add your drawing code here
         _spriteBatch.Begin(transformMatrix: this._camera.GetViewMatrix());
         _spriteBatch.Draw(_background, new Vector2(-500, -500), Color.White);
-        player.Draw(_spriteBatch);
+        foreach (IEntity entity in _entities)
+        {
+            entity.Draw(_spriteBatch);
+        }
         _spriteBatch.End();
         
         base.Draw(gameTime);

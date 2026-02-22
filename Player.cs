@@ -5,11 +5,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 
+using MonoGame.Extended;
 using MonoGame.Extended.Animations;
 using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Collisions;
 
 namespace StardewJelly;
-class Player
+class Player: IEntity
 {
     private readonly Vector2 _playerOffset = new Vector2(48, 48);
     
@@ -17,6 +19,9 @@ class Player
     private const int Speed = 300;
     private Dir _dir  = Dir.Down;
     private bool _isMoving = false;
+    
+    public bool dead =  false;
+    public IShapeF Bounds { get; }
     
     private readonly SpriteSheet _walkUpSpriteSheet;
     private readonly SpriteSheet _walkDownSpriteSheet;
@@ -30,6 +35,8 @@ class Player
 
     public Player(Texture2D walkUp, Texture2D walkDown, Texture2D walkLeft, Texture2D walkRight)
     {
+        Bounds = new RectangleF(_position, new SizeF(_playerOffset.X, _playerOffset.Y));
+        
         Texture2DAtlas walkUpAtlas = Texture2DAtlas.Create("player/walkUpAtlas", walkUp, 96, 96);
         Texture2DAtlas walkDownAtlas = Texture2DAtlas.Create("player/walkDownAtlas", walkDown, 96, 96);
         Texture2DAtlas walkLeftAtlas = Texture2DAtlas.Create("player/walkLeftAtlas", walkLeft, 96, 96);
@@ -206,6 +213,11 @@ class Player
                     break;   
             }
         }
+    }
+    
+    public void OnCollision(CollisionEventArgs collisionInfo)
+    {
+        dead = true;
     }
 }
 
