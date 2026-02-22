@@ -35,9 +35,12 @@ public class Game1 : Game
     private Texture2D skull;
     
     private CollisionComponent _collisionComponent;
-    private readonly List<IEntity> _entities = new List<IEntity>();
+    private Pool<Enemy> _enemyPool;
+    private List<IEntity> _entities = new List<IEntity>();
 
     Player player;
+
+    private bool gameStarted = true;
     
     public Game1()
     {
@@ -56,11 +59,6 @@ public class Game1 : Game
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1280, 720);
         this._camera = new OrthographicCamera(viewportAdapter);
         
-        // Collision layer
-        QuadTreeSpace quarTreeSpace = new QuadTreeSpace(new RectangleF(-500, -500, 2496, 2496));
-        Layer defaultQuadLayer = new Layer(quarTreeSpace);
-        _collisionComponent = new CollisionComponent(defaultQuadLayer);
-        
         base.Initialize();
     }
 
@@ -75,29 +73,44 @@ public class Game1 : Game
         Texture2D walkDown = Content.Load<Texture2D>("player/walkDown");
         Texture2D walkLeft = Content.Load<Texture2D>("player/walkLeft");
         Texture2D walkRight = Content.Load<Texture2D>("player/walkRight");
-
-        player = new Player(walkUp, walkDown, walkLeft, walkRight);
-
+        
         ball = Content.Load<Texture2D>("ball");
         skull = Content.Load<Texture2D>("skull");
+
+        player = new Player(walkUp, walkDown, walkLeft, walkRight);
         
-        Pool<Enemy> enemyPool = new Pool<Enemy>(
+        _enemyPool = new Pool<Enemy>(
             createItem: () => new Enemy(skull),      // Function that will be executed when we need to create a new Enemy
             resetItem: enemy => enemy.Reset(),  // Method that will be executed when the Enemy is returned to the pool for re-use
             capacity: 10                        // Maximum pool capacity, can not grow
         );
         
+        Reset();
+    }
+    
+    private void Reset()
+    {
+        _entities.Clear();
+        player.Reset();
+        
+        // Collision layer
+        QuadTreeSpace quarTreeSpace = new QuadTreeSpace(new RectangleF(-500, -500, 2496, 2496));
+        Layer defaultQuadLayer = new Layer(quarTreeSpace);
+        _collisionComponent = new CollisionComponent(defaultQuadLayer);
+        
         for (int i = 0; i < 10; i++)
         {
-            Enemy enemy = enemyPool.Obtain();
+            Enemy enemy = _enemyPool.Obtain();
             _collisionComponent.Insert(enemy);
             _entities.Add(enemy);
         }
         
         _collisionComponent.Insert(player);
         _entities.Add(player);
-    }
 
+        gameStarted = true;
+    }
+    
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -105,17 +118,30 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
-        _camera.Position = player.Position - new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
-        
-        // Make sure each entity moves around the screen
-        foreach (IEntity entity in _entities)
+        if (gameStarted)
         {
-            entity.Update(gameTime);
-        }
+            _camera.Position = player.Position - new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
+            
+            // Make sure each entity moves around the screen
+            foreach (IEntity entity in _entities)
+            {
+                entity.Update(gameTime);
+            }
 
-        // Make sure all collisions are detected and the OnCollision event for each is called
-        _collisionComponent.Update(gameTime);
-        
+            if (player.dead)
+            {
+                gameStarted = false;
+            }
+            
+            // Make sure all collisions are detected and the OnCollision event for each is called
+            _collisionComponent.Update(gameTime);
+        }
+        else
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed ||
+                Keyboard.GetState().IsKeyDown(Keys.Space))
+                Reset();
+        }
         base.Update(gameTime);
     }
 

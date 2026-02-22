@@ -185,6 +185,13 @@ class Player: IEntity
         Bounds.Position = _position - _playerOffset / 2;
     }
 
+    public void Reset()
+    {
+        dead = false;
+
+        _position = new Vector2(500, 300);
+    }
+    
     public void Draw(SpriteBatch spriteBatch)
     { 
         // Draw collision box
