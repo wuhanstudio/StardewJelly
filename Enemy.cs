@@ -17,7 +17,9 @@ public class Enemy: IEntity
     private readonly Vector2 _enermyOffset = new Vector2(48, 66);
     
     private Vector2 _position;
-    private const int Speed = 3;
+    private Vector2 _direction;
+    
+    private const int Speed = 5;
     private const int _radius = 48;
 
     private SpriteSheet _floatingSpriteSheet;
@@ -62,9 +64,49 @@ public class Enemy: IEntity
         
         if (!Player.Instance.dead)
         {
-            Vector2 direction = Player.Instance.Position - _position;
-            direction.Normalize();
-            _position = _position + direction * Speed;
+            // Choose from one direction
+            double choice = rand.NextDouble();
+
+            if (choice < 0.40)
+            {
+                return;
+            }
+            if (choice < 0.80)
+            {
+                int randX = 0;
+                while (randX.Equals(0))
+                {
+                    randX = rand.Next(-100, 100);
+                }
+
+                int randY = 0;
+                while (randY.Equals(0))
+                {
+                    randY = rand.Next(-100, 100);
+                }
+                
+                _direction = new Vector2(randX, randY);
+                _direction.Normalize();
+                _position = _position + _direction * Speed;
+            }
+            else if (choice < 0.94)
+            {
+                _direction = new Vector2(Player.Instance.Position.X - _position.X, 0);
+                _direction.Normalize();
+                _position = _position + _direction * Speed;
+            }
+            else if (choice < 0.98)
+            {
+                _direction = new Vector2(0, Player.Instance.Position.Y - _position.Y);
+                _direction.Normalize();
+                _position = _position + _direction * Speed;
+            }
+            else
+            {
+                _direction = Player.Instance.Position - _position;
+                _direction.Normalize();
+                _position = _position + _direction * Speed;
+            }
         }
     
         Bounds.Position =  _position;
@@ -82,8 +124,14 @@ public class Enemy: IEntity
     
     public void OnCollision(CollisionEventArgs collisionInfo)
     {
-        if(collisionInfo.Other.GetType() != typeof(Enemy))
+        if (collisionInfo.Other.GetType() != typeof(Enemy))
+        {
             _dead = true;
+        }
+        else
+        {
+            _direction = -_direction;            
+        }
     }
     
     public void Reset()

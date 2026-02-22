@@ -88,6 +88,10 @@ public class MainMenuScreen : GameScreen
     
     public override void Update(GameTime gameTime)
     {
+        if (GamePad.GetState(PlayerIndex.One).Buttons.X == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.R))
+            Reset();
+        d
         if (gameStarted)
         {
             _camera.Position = player.Position - new Vector2(Game.GraphicsDevice.Viewport.Width / 2f, Game.GraphicsDevice.Viewport.Height / 2f);
