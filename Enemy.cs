@@ -54,8 +54,15 @@ public class Enemy: IEntity
         });
         SpriteSheetAnimation floatingAnimation = _floatingSpriteSheet.GetAnimation("floating");
         _floatingAnimationController = new AnimationController(floatingAnimation);
-        
-        _position = new Vector2(-500, rand.Next(-500, 2000));
+
+        if (rand.NextDouble() < 0.5)
+        {
+            _position = new Vector2(-500, rand.Next(-500, 2000));
+        }
+        else
+        {
+            _position = new Vector2(rand.Next(-500, 2000), -500);
+        }
         Bounds = new CircleF(_position, _radius / 2);
     }
     

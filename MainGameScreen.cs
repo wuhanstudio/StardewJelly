@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +20,10 @@ public class MainMenuScreen : GameScreen
 {
     private OrthographicCamera _camera;
     private KeyboardState _prev_keystate;
+    private GamePadState _prev_gamePadState;
+
+    private double timer = 5.0;
+    private double maxTimer = 5.0;
     
     private Texture2D _background;
     private Texture2D ball;
@@ -63,6 +68,14 @@ public class MainMenuScreen : GameScreen
         Reset();
     }
 
+    private void newEnemy()
+    {
+        Enemy enemy = _enemyPool.Obtain();
+        _collisionComponent.Insert(enemy);
+        _enemies.Add(enemy);
+        _entities.Add(enemy);
+    }
+    
     private void Reset()
     {
         _entities.Clear();
@@ -75,10 +88,7 @@ public class MainMenuScreen : GameScreen
         
         for (int i = 0; i < 10; i++)
         {
-            Enemy enemy = _enemyPool.Obtain();
-            _collisionComponent.Insert(enemy);
-            _enemies.Add(enemy);
-            _entities.Add(enemy);
+            newEnemy();
         }
         
         _collisionComponent.Insert(player);
@@ -96,7 +106,8 @@ public class MainMenuScreen : GameScreen
         if (gameStarted)
         {
             KeyboardState keyboardState = Keyboard.GetState();
-            if (GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed ||
+            GamePadState  gamePadState = GamePad.GetState(PlayerIndex.One);
+            if ( (gamePadState.Buttons.A == ButtonState.Released && _prev_gamePadState.Buttons.A == ButtonState.Pressed) ||
                 (keyboardState.IsKeyUp(Keys.Space) && _prev_keystate.IsKeyDown(Keys.Space))
                 )
             {
@@ -107,7 +118,20 @@ public class MainMenuScreen : GameScreen
             }
 
             _prev_keystate = keyboardState;
+            _prev_gamePadState = gamePadState;
             _camera.Position = player.Position - new Vector2(Game.GraphicsDevice.Viewport.Width / 2f, Game.GraphicsDevice.Viewport.Height / 2f);
+            
+            timer = timer - gameTime.ElapsedGameTime.TotalSeconds;
+            if (timer < 0)
+            {
+                newEnemy();
+                timer = maxTimer;
+                maxTimer = maxTimer - 0.5;
+                if (maxTimer < 0.2)
+                {
+                    maxTimer = 0.2;
+                }
+            }
             
             // Make sure each entity moves around the screen
             foreach (IEntity entity in _entities)
