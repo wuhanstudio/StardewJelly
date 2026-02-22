@@ -13,6 +13,13 @@ using MonoGame.Extended.Collisions;
 namespace StardewJelly;
 class Player: IEntity
 {
+    private static Player _instance = null;
+    
+    public static Player Instance
+    {
+        get => _instance;
+    }
+    
     private readonly Vector2 _playerOffset = new Vector2(48, 48);
     
     private Vector2 _position = new Vector2(500, 300);
@@ -20,6 +27,12 @@ class Player: IEntity
     private Dir _dir  = Dir.Down;
     private bool _isMoving = false;
     
+    public Vector2 Position
+    {
+        get => _position;
+        set => _position = value;
+    }
+
     public bool dead =  false;
     public IShapeF Bounds { get; }
     
@@ -35,73 +48,73 @@ class Player: IEntity
 
     public Player(Texture2D walkUp, Texture2D walkDown, Texture2D walkLeft, Texture2D walkRight)
     {
-        Bounds = new RectangleF(_position - _playerOffset, new SizeF(96, 96));
-        
-        Texture2DAtlas walkUpAtlas = Texture2DAtlas.Create("player/walkUpAtlas", walkUp, 96, 96);
-        Texture2DAtlas walkDownAtlas = Texture2DAtlas.Create("player/walkDownAtlas", walkDown, 96, 96);
-        Texture2DAtlas walkLeftAtlas = Texture2DAtlas.Create("player/walkLeftAtlas", walkLeft, 96, 96);
-        Texture2DAtlas walkRightAtlas = Texture2DAtlas.Create("player/walkRightAtlas", walkRight, 96, 96);
+        if (_instance == null)
+        {
+            Bounds = new RectangleF(_position - _playerOffset, new SizeF(96, 96));
+            
+            Texture2DAtlas walkUpAtlas = Texture2DAtlas.Create("player/walkUpAtlas", walkUp, 96, 96);
+            Texture2DAtlas walkDownAtlas = Texture2DAtlas.Create("player/walkDownAtlas", walkDown, 96, 96);
+            Texture2DAtlas walkLeftAtlas = Texture2DAtlas.Create("player/walkLeftAtlas", walkLeft, 96, 96);
+            Texture2DAtlas walkRightAtlas = Texture2DAtlas.Create("player/walkRightAtlas", walkRight, 96, 96);
 
-        // Walk Up Animation
-        _walkUpSpriteSheet = new SpriteSheet("SpriteSheet/walkup", walkUpAtlas);
-        _walkUpSpriteSheet.DefineAnimation("walkup", builder =>
-        {
-            builder.IsLooping(true)
-                .AddFrame(walkUpAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkUpAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkUpAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkUpAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
-        });
-        SpriteSheetAnimation walkUpAnimation = _walkUpSpriteSheet.GetAnimation("walkup");
-        
-        // Walk Down Animation
-        _walkDownSpriteSheet = new SpriteSheet("SpriteSheet/walkdown", walkDownAtlas);
-        _walkDownSpriteSheet.DefineAnimation("walkdown", builder =>
-        {
-            builder.IsLooping(true)
-                .AddFrame(walkDownAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkDownAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkDownAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkDownAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
-        });
-        SpriteSheetAnimation walkDownAnimation = _walkDownSpriteSheet.GetAnimation("walkdown");
+            // Walk Up Animation
+            _walkUpSpriteSheet = new SpriteSheet("SpriteSheet/walkup", walkUpAtlas);
+            _walkUpSpriteSheet.DefineAnimation("walkup", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(walkUpAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkUpAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkUpAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkUpAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
+            });
+            SpriteSheetAnimation walkUpAnimation = _walkUpSpriteSheet.GetAnimation("walkup");
+            
+            // Walk Down Animation
+            _walkDownSpriteSheet = new SpriteSheet("SpriteSheet/walkdown", walkDownAtlas);
+            _walkDownSpriteSheet.DefineAnimation("walkdown", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(walkDownAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkDownAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkDownAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkDownAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
+            });
+            SpriteSheetAnimation walkDownAnimation = _walkDownSpriteSheet.GetAnimation("walkdown");
 
-        // Walk Left Animation
-        _walkLeftSpriteSheet = new SpriteSheet("SpriteSheet/walkleft", walkLeftAtlas);
-        _walkLeftSpriteSheet.DefineAnimation("walkleft", builder =>
-        {
-            builder.IsLooping(true)
-                .AddFrame(walkLeftAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkLeftAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkLeftAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkLeftAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
-        });
-        SpriteSheetAnimation walkLeftAnimation = _walkLeftSpriteSheet.GetAnimation("walkleft");
+            // Walk Left Animation
+            _walkLeftSpriteSheet = new SpriteSheet("SpriteSheet/walkleft", walkLeftAtlas);
+            _walkLeftSpriteSheet.DefineAnimation("walkleft", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(walkLeftAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkLeftAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkLeftAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkLeftAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
+            });
+            SpriteSheetAnimation walkLeftAnimation = _walkLeftSpriteSheet.GetAnimation("walkleft");
 
-        // Walk Right Animation
-        _walkRightSpriteSheet = new SpriteSheet("SpriteSheet/walkright", walkRightAtlas);
-        _walkRightSpriteSheet.DefineAnimation("walkright", builder =>
-        {
-            builder.IsLooping(true)
-                .AddFrame(walkRightAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkRightAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkRightAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
-                .AddFrame(walkRightAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
-        });
-        SpriteSheetAnimation walkRightAnimation = _walkRightSpriteSheet.GetAnimation("walkright");
-        
-        _walkUpAnimationController = new AnimationController(walkUpAnimation);
-        _walkDownAnimationController = new AnimationController(walkDownAnimation);
-        _walkLeftAnimationController = new AnimationController(walkLeftAnimation);
-        _walkRightAnimationController = new AnimationController(walkRightAnimation);
+            // Walk Right Animation
+            _walkRightSpriteSheet = new SpriteSheet("SpriteSheet/walkright", walkRightAtlas);
+            _walkRightSpriteSheet.DefineAnimation("walkright", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(walkRightAtlas.GetRegion(0).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkRightAtlas.GetRegion(1).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkRightAtlas.GetRegion(2).Name, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(walkRightAtlas.GetRegion(3).Name, TimeSpan.FromSeconds(0.2));
+            });
+            SpriteSheetAnimation walkRightAnimation = _walkRightSpriteSheet.GetAnimation("walkright");
+            
+            _walkUpAnimationController = new AnimationController(walkUpAnimation);
+            _walkDownAnimationController = new AnimationController(walkDownAnimation);
+            _walkLeftAnimationController = new AnimationController(walkLeftAnimation);
+            _walkRightAnimationController = new AnimationController(walkRightAnimation);
+            
+            _instance = this;
+        }
+
     }
-    
-    public Vector2 Position
-    {
-        get => _position;
-        set => _position = value;
-    }
-    
+
     public void Update(GameTime gameTime)
     {
         Keys[] movementKeys =
@@ -170,7 +183,7 @@ class Player: IEntity
     public void Draw(SpriteBatch spriteBatch)
     { 
         // Draw collision box
-        spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3f);
+        // spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3f);
         
         if(_isMoving)
         {

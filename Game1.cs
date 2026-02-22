@@ -32,7 +32,7 @@ public class Game1 : Game
     private Texture2D skull;
     
     private CollisionComponent _collisionComponent;
-    private readonly List<IEntity> _entities = new List<IEntity>();
+    private List<IEntity> _entities = new List<IEntity>();
 
     Player player;
     
@@ -77,8 +77,8 @@ public class Game1 : Game
         
         Enermy enermy =  new Enermy(skull);
         
-        _entities.Add(player);
         _entities.Add(enermy);
+        _entities.Add(player);
         
         // Add those objects to the collisionComponent so it will do the collision checking for us
         foreach (IEntity entity in _entities)

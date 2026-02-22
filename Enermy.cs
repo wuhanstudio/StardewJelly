@@ -16,7 +16,7 @@ public class Enermy: IEntity
     private readonly Vector2 _enermyOffset = new Vector2(48, 66);
     
     private Vector2 _position = new Vector2(300, 300);
-    private const int Speed = 300;
+    private const int Speed = 3;
     private const int _radius = 48;
     private Dir _dir  = Dir.Down;
 
@@ -51,15 +51,22 @@ public class Enermy: IEntity
     
     public void Update(GameTime gameTime)
     {
+        // Move towards the player
+        Vector2 direction = Player.Instance.Position - _position;
+        direction.Normalize();
+        _position = _position + direction * Speed;
+        
         Bounds.Position =  _position;
+        
         _floatingAnimationController.Update(gameTime);
     }
     
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.DrawCircle((CircleF)Bounds, _radius, Color.Red, 3f);
-        Texture2DRegion currentWalkFrame= _floatingSpriteSheet.TextureAtlas[_floatingAnimationController.CurrentFrame];
+        // Draw the collision box
+        // spriteBatch.DrawCircle((CircleF)Bounds, _radius, Color.Red, 3f);
         
+        Texture2DRegion currentWalkFrame= _floatingSpriteSheet.TextureAtlas[_floatingAnimationController.CurrentFrame];
         spriteBatch.Draw(currentWalkFrame, _position - _enermyOffset, Color.White);
     }
     
