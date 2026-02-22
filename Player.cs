@@ -142,32 +142,37 @@ class Player: IEntity
             Keys.Up, Keys.Left, Keys.Down, Keys.Right  // Arrow keys
         ];
         
+        Buttons[] movementButtons =
+        [
+            Buttons.DPadUp, Buttons.DPadDown, Buttons.DPadLeft, Buttons.DPadRight,  // DPad
+        ];
+        
         KeyboardState keyboardState = Keyboard.GetState();
-        // GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+        GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
         
         float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up))
+        if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up) || gamePadState.DPad.Up == ButtonState.Pressed)
         {
             _dir = Dir.Up;
         }
-        if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down))
+        if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down) || gamePadState.DPad.Down == ButtonState.Pressed)
         {
             _dir = Dir.Down;
         }
 
-        if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left))
+        if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left) || gamePadState.DPad.Left == ButtonState.Pressed)
         {
             _dir = Dir.Left;
         }
 
-        if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.Right))
+        if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.Right) || gamePadState.DPad.Right == ButtonState.Pressed)
         {
             _dir = Dir.Right;
         }
 
         // Player is moving if any movement key is currently pressed
-        _isMoving = movementKeys.Any(k => keyboardState.IsKeyDown(k));
+        _isMoving = movementKeys.Any(k => keyboardState.IsKeyDown(k)) || movementButtons.Any(k => gamePadState.IsButtonDown(k));
         
         if (_isMoving)
         {
