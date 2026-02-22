@@ -50,7 +50,7 @@ class Player: IEntity
     {
         if (_instance == null)
         {
-            Bounds = new RectangleF(_position - _playerOffset, new SizeF(96, 96));
+            Bounds = new RectangleF(_position - _playerOffset / 2, new SizeF(48, 48));
             
             Texture2DAtlas walkUpAtlas = Texture2DAtlas.Create("player/walkUpAtlas", walkUp, 96, 96);
             Texture2DAtlas walkDownAtlas = Texture2DAtlas.Create("player/walkDownAtlas", walkDown, 96, 96);
@@ -117,6 +117,11 @@ class Player: IEntity
 
     public void Update(GameTime gameTime)
     {
+        if (dead)
+        {
+            return;
+        }
+        
         Keys[] movementKeys =
         [
             Keys.W, Keys.A, Keys.S, Keys.D,  // WASD
@@ -177,13 +182,16 @@ class Player: IEntity
             }            
         }
         
-        Bounds.Position = _position - _playerOffset;
+        Bounds.Position = _position - _playerOffset / 2;
     }
 
     public void Draw(SpriteBatch spriteBatch)
     { 
         // Draw collision box
         // spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3f);
+
+        if (dead)
+            return;
         
         if(_isMoving)
         {

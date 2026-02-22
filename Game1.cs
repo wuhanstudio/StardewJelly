@@ -32,7 +32,7 @@ public class Game1 : Game
     private Texture2D skull;
     
     private CollisionComponent _collisionComponent;
-    private List<IEntity> _entities = new List<IEntity>();
+    private readonly List<IEntity> _entities = new List<IEntity>();
 
     Player player;
     
@@ -53,7 +53,7 @@ public class Game1 : Game
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1280, 720);
         this._camera = new OrthographicCamera(viewportAdapter);
         
-        _collisionComponent = new CollisionComponent(new RectangleF(0,0, 1280, 720));
+        _collisionComponent = new CollisionComponent(new RectangleF(-500, -500, 2496, 2496));
         
         base.Initialize();
     }

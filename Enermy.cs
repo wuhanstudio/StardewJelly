@@ -15,7 +15,7 @@ public class Enermy: IEntity
     
     private readonly Vector2 _enermyOffset = new Vector2(48, 66);
     
-    private Vector2 _position = new Vector2(300, 300);
+    private Vector2 _position = new Vector2(200, 200);
     private const int Speed = 3;
     private const int _radius = 48;
     private Dir _dir  = Dir.Down;
@@ -46,18 +46,21 @@ public class Enermy: IEntity
         SpriteSheetAnimation floatingAnimation = _floatingSpriteSheet.GetAnimation("floating");
         _floatingAnimationController = new AnimationController(floatingAnimation);
         
-        Bounds = new CircleF(_position, _radius);
+        Bounds = new CircleF(_position, _radius / 2);
     }
     
     public void Update(GameTime gameTime)
     {
         // Move towards the player
-        Vector2 direction = Player.Instance.Position - _position;
-        direction.Normalize();
-        _position = _position + direction * Speed;
-        
+        if (!Player.Instance.dead)
+        {
+            Vector2 direction = Player.Instance.Position - _position;
+            direction.Normalize();
+            _position = _position + direction * Speed;
+            
+        }
+    
         Bounds.Position =  _position;
-        
         _floatingAnimationController.Update(gameTime);
     }
     
