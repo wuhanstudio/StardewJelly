@@ -75,7 +75,10 @@ public class Game1 : Game
         ball = Content.Load<Texture2D>("ball");
         skull = Content.Load<Texture2D>("skull");
         
+        Enermy enermy =  new Enermy(skull);
+        
         _entities.Add(player);
+        _entities.Add(enermy);
         
         // Add those objects to the collisionComponent so it will do the collision checking for us
         foreach (IEntity entity in _entities)

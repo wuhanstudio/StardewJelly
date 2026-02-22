@@ -35,7 +35,7 @@ class Player: IEntity
 
     public Player(Texture2D walkUp, Texture2D walkDown, Texture2D walkLeft, Texture2D walkRight)
     {
-        Bounds = new RectangleF(_position, new SizeF(_playerOffset.X, _playerOffset.Y));
+        Bounds = new RectangleF(_position - _playerOffset, new SizeF(96, 96));
         
         Texture2DAtlas walkUpAtlas = Texture2DAtlas.Create("player/walkUpAtlas", walkUp, 96, 96);
         Texture2DAtlas walkDownAtlas = Texture2DAtlas.Create("player/walkDownAtlas", walkDown, 96, 96);
@@ -163,10 +163,15 @@ class Player: IEntity
                     break;
             }            
         }
+        
+        Bounds.Position = _position - _playerOffset;
     }
 
     public void Draw(SpriteBatch spriteBatch)
     { 
+        // Draw collision box
+        spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3f);
+        
         if(_isMoving)
         {
             Texture2DRegion currentWalkFrame;
