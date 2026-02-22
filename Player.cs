@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -13,18 +14,32 @@ using MonoGame.Extended.Collisions;
 namespace StardewJelly;
 class Player: IEntity
 {
+    private bool _dead;
+
+    public bool Dead()
+    {
+        return _dead;
+    }
+    
     private static Player _instance = null;
     
+    public List<Ball> weapons = new List<Ball>();
+
     public static Player Instance
     {
         get => _instance;
+    }
+    
+    private Dir _dir  = Dir.Down;
+    public Dir Direction
+    {
+        get => _dir;
     }
     
     private readonly Vector2 _playerOffset = new Vector2(48, 48);
     
     private Vector2 _position = new Vector2(500, 300);
     private const int Speed = 300;
-    private Dir _dir  = Dir.Down;
     private bool _isMoving = false;
     
     public Vector2 Position
@@ -32,8 +47,7 @@ class Player: IEntity
         get => _position;
         set => _position = value;
     }
-
-    public bool dead =  false;
+    
     public IShapeF Bounds { get; }
     
     private readonly SpriteSheet _walkUpSpriteSheet;
@@ -117,7 +131,7 @@ class Player: IEntity
 
     public void Update(GameTime gameTime)
     {
-        if (dead)
+        if (_dead)
         {
             return;
         }
@@ -187,7 +201,7 @@ class Player: IEntity
 
     public void Reset()
     {
-        dead = false;
+        _dead = false;
 
         _position = new Vector2(500, 300);
     }
@@ -197,7 +211,7 @@ class Player: IEntity
         // Draw collision box
         // spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3f);
 
-        if (dead)
+        if (_dead)
             return;
         
         if(_isMoving)
@@ -252,7 +266,7 @@ class Player: IEntity
     {
         if (collisionInfo.Other.GetType() == typeof(Enemy))
         {
-            dead = true;
+            _dead = true;
         }
     }
 }

@@ -9,4 +9,6 @@ public interface IEntity : ICollisionActor
 {
     public void Update(GameTime gameTime);
     public void Draw(SpriteBatch spriteBatch);
+
+    public bool Dead();
 }

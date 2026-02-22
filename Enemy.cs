@@ -10,7 +10,12 @@ namespace StardewJelly;
 
 public class Enemy: IEntity
 {
-    private bool _dead = false;
+    private bool _dead;
+    
+    public bool Dead()
+    {
+        return _dead;
+    }
     
     public IShapeF Bounds { get; }
     
@@ -62,7 +67,7 @@ public class Enemy: IEntity
             return;
         }
         
-        if (!Player.Instance.dead)
+        if (!Player.Instance.Dead())
         {
             // Choose from one direction
             double choice = rand.NextDouble();
@@ -117,14 +122,16 @@ public class Enemy: IEntity
     {
         // Draw the collision box
         // spriteBatch.DrawCircle((CircleF)Bounds, _radius, Color.Red, 3f);
-
-        Texture2DRegion currentWalkFrame= _floatingSpriteSheet.TextureAtlas[_floatingAnimationController.CurrentFrame];
-        spriteBatch.Draw(currentWalkFrame, _position - _enermyOffset, Color.White);
+        if (!_dead)
+        {
+            Texture2DRegion currentWalkFrame= _floatingSpriteSheet.TextureAtlas[_floatingAnimationController.CurrentFrame];
+            spriteBatch.Draw(currentWalkFrame, _position - _enermyOffset, Color.White);
+        }
     }
     
     public void OnCollision(CollisionEventArgs collisionInfo)
     {
-        if (collisionInfo.Other.GetType() != typeof(Enemy))
+        if (collisionInfo.Other.GetType() == typeof(Ball))
         {
             _dead = true;
         }
