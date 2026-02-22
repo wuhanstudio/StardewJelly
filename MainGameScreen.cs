@@ -40,7 +40,7 @@ public class MainMenuScreen : GameScreen
 
     public MainMenuScreen(Game game) : base(game)
     {
-        var viewportAdapter = new BoxingViewportAdapter(Game.Window, GraphicsDevice, 1280, 720);
+        var viewportAdapter = new BoxingViewportAdapter(Game.Window, GraphicsDevice, 1280, 960);
         _camera = new OrthographicCamera(viewportAdapter);
     }
 

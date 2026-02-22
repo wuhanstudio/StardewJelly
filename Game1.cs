@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using MonoGame.Extended;
-using MonoGame.Extended.Animations;
-using MonoGame.Extended.Collections;
-using MonoGame.Extended.Collisions;
-using MonoGame.Extended.Collisions.Layers;
-using MonoGame.Extended.Collisions.QuadTree;
-using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Screens;
-using MonoGame.Extended.Screens.Transitions;
-using MonoGame.Extended.ViewportAdapters;
 
 namespace StardewJelly;
 
@@ -35,6 +24,8 @@ public class Game1 : Game
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
+        _graphics.IsFullScreen = true;
+        
         Content.RootDirectory = "Content";
         IsMouseVisible = false;
         
@@ -46,7 +37,7 @@ public class Game1 : Game
     {
         // TODO: Add your initialization logic here
         _graphics.PreferredBackBufferWidth = 1280;
-        _graphics.PreferredBackBufferHeight = 720;
+        _graphics.PreferredBackBufferHeight = 960;
         _graphics.ApplyChanges();
         
         base.Initialize();
