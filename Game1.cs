@@ -26,6 +26,8 @@ public class Game1 : Game
     
     private OrthographicCamera _camera;
     
+    private Vector2 PLAYER_OFFSET = new Vector2(48, 48);
+    
     Texture2D playerSprite;
     
     Texture2D walkUp;
@@ -195,22 +197,22 @@ public class Game1 : Game
                 case Dir.Up:
                     walkUpAnimationController.Update(gameTime);
                     currentWalkFrame= walk_up_sprite_sheet.TextureAtlas[walkUpAnimationController.CurrentFrame];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break;  
                 case Dir.Down:
                     walkDownAnimationController.Update(gameTime);
                     currentWalkFrame = walk_down_sprite_sheet.TextureAtlas[walkDownAnimationController.CurrentFrame];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break; 
                 case Dir.Left:
                     walkLeftAnimationController.Update(gameTime);
                     currentWalkFrame = walk_left_sprite_sheet.TextureAtlas[walkLeftAnimationController.CurrentFrame];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break;   
                 case Dir.Right:
                     walkRightAnimationController.Update(gameTime);
                     currentWalkFrame = walk_right_sprite_sheet.TextureAtlas[walkRightAnimationController.CurrentFrame];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break;   
             }
         }
@@ -221,19 +223,19 @@ public class Game1 : Game
             {
                 case Dir.Up:
                     currentWalkFrame= walk_up_sprite_sheet.TextureAtlas[3];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break;  
                 case Dir.Down:
                     currentWalkFrame = walk_down_sprite_sheet.TextureAtlas[3];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break; 
                 case Dir.Left:
                     currentWalkFrame = walk_left_sprite_sheet.TextureAtlas[3];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break;   
                 case Dir.Right:
                     currentWalkFrame = walk_right_sprite_sheet.TextureAtlas[3];
-                    _spriteBatch.Draw(currentWalkFrame, player.Position, Color.White);
+                    _spriteBatch.Draw(currentWalkFrame, player.Position - PLAYER_OFFSET, Color.White);
                     break;   
             }
         }
