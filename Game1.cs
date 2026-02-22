@@ -6,7 +6,10 @@ using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 using MonoGame.Extended.Animations;
+using MonoGame.Extended.Collections;
 using MonoGame.Extended.Collisions;
+using MonoGame.Extended.Collisions.Layers;
+using MonoGame.Extended.Collisions.QuadTree;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.ViewportAdapters;
 
@@ -40,7 +43,7 @@ public class Game1 : Game
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
-        IsMouseVisible = true;
+        IsMouseVisible = false;
     }
 
     protected override void Initialize()
@@ -53,7 +56,10 @@ public class Game1 : Game
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1280, 720);
         this._camera = new OrthographicCamera(viewportAdapter);
         
-        _collisionComponent = new CollisionComponent(new RectangleF(-500, -500, 2496, 2496));
+        // Collision layer
+        QuadTreeSpace quarTreeSpace = new QuadTreeSpace(new RectangleF(-500, -500, 2496, 2496));
+        Layer defaultQuadLayer = new Layer(quarTreeSpace);
+        _collisionComponent = new CollisionComponent(defaultQuadLayer);
         
         base.Initialize();
     }
@@ -75,17 +81,21 @@ public class Game1 : Game
         ball = Content.Load<Texture2D>("ball");
         skull = Content.Load<Texture2D>("skull");
         
-        Enermy enermy =  new Enermy(skull);
+        Pool<Enemy> enemyPool = new Pool<Enemy>(
+            createItem: () => new Enemy(skull),      // Function that will be executed when we need to create a new Enemy
+            resetItem: enemy => enemy.Reset(),  // Method that will be executed when the Enemy is returned to the pool for re-use
+            capacity: 10                        // Maximum pool capacity, can not grow
+        );
         
-        _entities.Add(enermy);
-        _entities.Add(player);
-        
-        // Add those objects to the collisionComponent so it will do the collision checking for us
-        foreach (IEntity entity in _entities)
+        for (int i = 0; i < 10; i++)
         {
-            _collisionComponent.Insert(entity);
+            Enemy enemy = enemyPool.Obtain();
+            _collisionComponent.Insert(enemy);
+            _entities.Add(enemy);
         }
-
+        
+        _collisionComponent.Insert(player);
+        _entities.Add(player);
     }
 
     protected override void Update(GameTime gameTime)

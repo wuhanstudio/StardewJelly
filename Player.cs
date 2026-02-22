@@ -243,7 +243,10 @@ class Player: IEntity
     
     public void OnCollision(CollisionEventArgs collisionInfo)
     {
-        dead = true;
+        if (collisionInfo.Other.GetType() == typeof(Enemy))
+        {
+            dead = true;
+        }
     }
 }
 

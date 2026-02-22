@@ -8,22 +8,24 @@ using MonoGame.Extended.Graphics;
 
 namespace StardewJelly;
 
-public class Enermy: IEntity
+public class Enemy: IEntity
 {
-    public bool dead =  false;
+    private bool _dead = false;
+    
     public IShapeF Bounds { get; }
     
     private readonly Vector2 _enermyOffset = new Vector2(48, 66);
     
-    private Vector2 _position = new Vector2(200, 200);
+    private Vector2 _position;
     private const int Speed = 3;
     private const int _radius = 48;
-    private Dir _dir  = Dir.Down;
 
     private SpriteSheet _floatingSpriteSheet;
     private AnimationController _floatingAnimationController;
+
+    private Random rand = new Random();
     
-    public Enermy(Texture2D texture)
+    public Enemy(Texture2D texture)
     {
         Texture2DAtlas floatingAtlas = Texture2DAtlas.Create("enermy/floating", texture, 96, 132);
         
@@ -46,18 +48,23 @@ public class Enermy: IEntity
         SpriteSheetAnimation floatingAnimation = _floatingSpriteSheet.GetAnimation("floating");
         _floatingAnimationController = new AnimationController(floatingAnimation);
         
+        _position = new Vector2(-500, rand.Next(-500, 2000));
         Bounds = new CircleF(_position, _radius / 2);
     }
     
     public void Update(GameTime gameTime)
     {
         // Move towards the player
+        if (_dead)
+        {
+            return;
+        }
+        
         if (!Player.Instance.dead)
         {
             Vector2 direction = Player.Instance.Position - _position;
             direction.Normalize();
             _position = _position + direction * Speed;
-            
         }
     
         Bounds.Position =  _position;
@@ -68,13 +75,19 @@ public class Enermy: IEntity
     {
         // Draw the collision box
         // spriteBatch.DrawCircle((CircleF)Bounds, _radius, Color.Red, 3f);
-        
+
         Texture2DRegion currentWalkFrame= _floatingSpriteSheet.TextureAtlas[_floatingAnimationController.CurrentFrame];
         spriteBatch.Draw(currentWalkFrame, _position - _enermyOffset, Color.White);
     }
     
     public void OnCollision(CollisionEventArgs collisionInfo)
     {
-        dead = true;
+        if(collisionInfo.Other.GetType() != typeof(Enemy))
+            _dead = true;
+    }
+    
+    public void Reset()
+    {
+        _dead = false;
     }
 }
